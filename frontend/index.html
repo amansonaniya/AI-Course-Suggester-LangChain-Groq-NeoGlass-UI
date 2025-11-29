@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Course Suggester</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="light">
+
+  <nav class="nav">
+    <div class="nav-left">
+      <div class="logo">
+        <!-- Inline SVG Logo -->
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="20" height="20" rx="6" fill="url(#g)" />
+          <path d="M7 12h10M7 8h10M7 16h10" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
+          <defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#6EE7B7" offset="0"/><stop stop-color="#60A5FA" offset="1"/></linearGradient></defs>
+        </svg>
+      </div>
+      <div class="brand">
+        <div class="name">AI Course Suggester</div>
+        <div class="tag">Personalized learning roadmaps</div>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <button id="themeToggle" class="icon-btn" title="Toggle dark mode">🌙</button>
+      <a class="cta" href="#suggester">Start</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <h1>Discover your <span class="accent">next course</span>, build a roadmap, and reach your goal.</h1>
+    <p class="lead">Powered by Groq + LangChain — designed with prompt engineering best practices.</p>
+  </header>
+
+  <main class="main">
+    <section id="suggester" class="card glass">
+      <form id="form" class="form">
+        <div class="row">
+          <label>Skills you know</label>
+          <input id="skills_known" placeholder="Python, SQL, Excel" />
+        </div>
+
+        <div class="row">
+          <label>Skills you want to learn</label>
+          <input id="skills_want" placeholder="Machine Learning, Cloud" />
+        </div>
+
+        <div class="row">
+          <label>Career goal</label>
+          <input id="career_goal" placeholder="Data Scientist" />
+        </div>
+
+        <div class="row small">
+          <label>Available months</label>
+          <input type="number" id="duration_months" value="6" min="1" max="24" />
+        </div>
+
+        <div class="actions">
+          <button id="submit" class="btn primary">Generate Plan</button>
+          <button id="clear" class="btn ghost" type="button">Clear</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="result" class="card result" style="display:none;">
+      <div class="result-head">
+        <h2>Suggested Courses</h2>
+        <div class="result-actions">
+          <button id="copyBtn" class="icon-btn" title="Copy output">📋</button>
+          <button id="downloadBtn" class="icon-btn" title="Download JSON">⬇️</button>
+        </div>
+      </div>
+
+      <div id="outputArea" class="output-area"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div>Made with ❤️ • <strong>Groq</strong> + <strong>LangChain</strong></div>
+    <div class="foot-links"> <a href="#">Docs</a> <a href="#">GitHub</a> </div>
+  </footer>
+
+<script>
+// Theme toggle
+const themeToggle = document.getElementById('themeToggle');
+themeToggle.addEventListener('click', () => {
+  const body = document.body;
+  body.classList.toggle('dark');
+  body.classList.toggle('light');
+  themeToggle.textContent = body.classList.contains('dark') ? '☀️' : '🌙';
+});
+
+// Form logic
+const form = document.getElementById('form');
+const resultSection = document.getElementById('result');
+const outputArea = document.getElementById('outputArea');
+const loader = document.createElement('div');
+loader.className = 'loader';
+
+document.getElementById('clear').addEventListener('click', () => {
+  form.reset();
+  resultSection.style.display='none';
+  outputArea.innerHTML='';
+});
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  resultSection.style.display='none';
+  outputArea.innerHTML='';
+  resultSection.appendChild(loader);
+
+  const payload = {
+    skills_known: document.getElementById('skills_known').value,
+    skills_want: document.getElementById('skills_want').value,
+    career_goal: document.getElementById('career_goal').value,
+    duration_months: parseInt(document.getElementById('duration_months').value || 6)
+  };
+
+  try {
+    const res = await fetch('http://localhost:8000/generate', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    if(!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    loader.remove();
+
+    // If success and parsed JSON returned
+    if(data.success && data.data){
+      renderData(data.data);
+    } else {
+      outputArea.innerHTML = '<pre class="raw">'+(data.raw||'No output')+'</pre>';
+    }
+    resultSection.style.display='block';
+  } catch(err){
+    loader.remove();
+    outputArea.innerHTML = '<div class="error">'+err+'</div>';
+    resultSection.style.display='block';
+  }
+});
+
+function renderData(d){
+  // courses
+  const courses = d.courses || [];
+  const roadmap = d.roadmap || {};
+  const notes = d.notes || '';
+
+  let html = '<div class="courses">';
+  courses.forEach((c, i) => {
+    html += `
+      <div class="course-card">
+        <div class="course-index">${i+1}</div>
+        <div class="course-body">
+          <div class="course-title">${escapeHtml(c.title)}</div>
+          <div class="course-obj">${escapeHtml(c.objective)}</div>
+          <div class="platforms">Platforms: ${c.platforms.map(p => '<span class="pill">'+escapeHtml(p)+'</span>').join(' ')}</div>
+        </div>
+      </div>`;
+  });
+  html += '</div>';
+
+  html += '<div class="roadmap"><h3>Roadmap</h3><div class="phase">Phase 1: '+escapeHtml(roadmap.phase1||'')+'</div><div class="phase">Phase 2: '+escapeHtml(roadmap.phase2||'')+'</div><div class="phase">Phase 3: '+escapeHtml(roadmap.phase3||'')+'</div></div>';
+
+  if(notes) html += '<div class="notes"><strong>Notes:</strong> '+escapeHtml(notes)+'</div>';
+
+  outputArea.innerHTML = html;
+}
+
+// small helper
+function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// copy & download
+document.getElementById('copyBtn').addEventListener('click', () => {
+  const text = JSON.stringify(window.lastData || {} , null, 2);
+  navigator.clipboard.writeText(text).then(()=> alert('Copied to clipboard'));
+});
+document.getElementById('downloadBtn').addEventListener('click', () => {
+  const data = window.lastData || {};
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'course-plan.json'; a.click();
+  URL.revokeObjectURL(url);
+});
+</script>
+
+</body>
+</html>

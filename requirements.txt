@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+langchain
+langchain-groq
+python-dotenv
+aiohttp
+requests
+jinja2
+python-multipart

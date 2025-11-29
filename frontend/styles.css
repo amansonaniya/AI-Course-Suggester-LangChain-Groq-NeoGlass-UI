@@ -1,0 +1,85 @@
+:root{
+  --glass-bg: rgba(255,255,255,0.6);
+  --glass-border: rgba(255,255,255,0.3);
+  --accent1: #6EE7B7;
+  --accent2: #60A5FA;
+  --muted: #64748b;
+  --card-shadow: 0 10px 30px rgba(2,6,23,0.12);
+}
+
+*{box-sizing:border-box}
+body{font-family:Inter,system-ui,Segoe UI,Roboto; margin:0; min-height:100vh; background:linear-gradient(135deg,#e6f7ff,#f3e8ff); color:#07103a; transition:background 0.3s ease;}
+
+/* Dark theme */
+body.dark{
+  --glass-bg: rgba(10,13,20,0.6);
+  --glass-border: rgba(255,255,255,0.06);
+  --accent1: #34d399;
+  --accent2: #60a5fa;
+  background: linear-gradient(135deg,#0f172a,#021024);
+  color:#e6f1ff;
+}
+
+.nav{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;max-width:1100px;margin:0 auto}
+.logo{display:flex;align-items:center;gap:12px}
+.brand .name{font-weight:700}
+.brand .tag{font-size:12px;color:var(--muted)}
+
+.nav-right{display:flex;gap:12px;align-items:center}
+.icon-btn{background:transparent;border:none;padding:8px;border-radius:8px;cursor:pointer;font-size:18px}
+.cta{background:linear-gradient(90deg,var(--accent1),var(--accent2));padding:8px 12px;border-radius:10px;color:#04203a;text-decoration:none;font-weight:700;box-shadow:0 6px 20px rgba(96,165,250,0.18)}
+
+.hero{max-width:900px;margin:10px auto 0;text-align:center;padding:28px}
+.hero h1{font-size:28px;margin:0}
+.hero .accent{background:linear-gradient(90deg,var(--accent1),var(--accent2)); -webkit-background-clip:text;background-clip:text;color:transparent}
+
+.main{max-width:1100px;margin:18px auto;padding:18px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card{border-radius:14px;padding:18px;background:var(--glass-bg);backdrop-filter:blur(8px);border:1px solid var(--glass-border);box-shadow:var(--card-shadow);transition:transform 0.25s ease}
+.card:hover{transform:translateY(-6px)}
+
+/* form */
+.form .row{margin-bottom:12px}
+.form label{display:block;font-weight:600;margin-bottom:6px}
+.form input{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(10,20,40,0.06)}
+
+.small input{max-width:160px}
+
+.actions{display:flex;gap:12px;margin-top:10px}
+.btn{padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+.btn.primary{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#04203a;box-shadow:0 10px 30px rgba(96,165,250,0.12)}
+.btn.ghost{background:transparent;border:1px solid rgba(10,20,40,0.06);color:var(--muted)}
+
+/* result */
+.result{grid-column:1 / span 2;overflow:hidden}
+.result-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.output-area{display:flex;flex-direction:column;gap:12px;}
+
+/* course card */
+.course-card{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:10px;border:1px solid rgba(10,20,40,0.04);background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.45))}
+body.dark .course-card{background:linear-gradient(180deg,rgba(8,12,18,0.6),rgba(12,16,24,0.5))}
+
+.course-index{width:36px;height:36px;border-radius:8px;background:linear-gradient(90deg,var(--accent2),var(--accent1));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
+.course-title{font-weight:700}
+.course-obj{color:var(--muted);font-size:14px;margin-top:6px}
+.pill{display:inline-block;padding:6px 8px;border-radius:999px;background:rgba(10,20,40,0.06);margin-right:6px;font-size:12px}
+body.dark .pill{background:rgba(255,255,255,0.04)}
+
+/* roadmap */
+.roadmap{margin-top:8px;padding:12px;border-radius:10px;border:1px dashed rgba(10,20,40,0.04);background:transparent}
+.phase{padding:8px 0;font-weight:600}
+
+/* notes */
+.notes{margin-top:8px;padding:10px;border-radius:8px;background:rgba(255,255,255,0.04)}
+
+/* footer */
+.footer{max-width:1100px;margin:24px auto;padding:18px;display:flex;justify-content:space-between;color:var(--muted)}
+
+/* loader */
+.loader{border:6px solid rgba(255,255,255,0.2);border-top:6px solid var(--accent2);border-radius:50%;width:42px;height:42px;animation:spin 1s linear infinite;margin:12px auto}
+@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+
+/* responsive */
+@media(max-width:880px){
+  .main{grid-template-columns:1fr; padding:12px}
+  .hero h1{font-size:22px}
+}

@@ -259,13 +259,4 @@ This project demonstrates:
 * Modern UI + fully responsive design
 
 It is a complete production-ready AI app that converts user inputs into a smart career roadmap.
-
----
-
-Want me to also prepare:
-
-* **Project demo video script**,
-* **GitHub repo content**,
-* or a **PDF version of README**?
-
-Just tell me!
+ 
